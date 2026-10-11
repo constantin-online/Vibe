@@ -1,0 +1,41 @@
+# Включаем модуль перезаписи URL
+RewriteEngine On
+
+# Устанавливаем index.php как файл по умолчанию при заходе в папку
+DirectoryIndex index.php
+
+# 1. Если пользователь ввел /index.php, перенаправляем его на чистый /
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php(\?.*)?\ HTTP/
+RewriteRule ^index\.php$ / [R=301,L]
+
+# 2. Если пользователь перешел по ссылке /?page=home, перенаправляем на чистый /
+RewriteCond %{QUERY_STRING} ^page=home$
+RewriteRule ^$ /? [R=301,L]
+
+# Защита от просмотра содержимого папок (для безопасности)
+Options -Indexes
+
+# Включаем кэширование статики
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Сжатие GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+</IfModule>
+
+# PHP оптимизация
+<IfModule mod_php.c>
+    php_value session.cookie_httponly 1
+    php_value session.use_strict_mode 1
+</IfModule>
